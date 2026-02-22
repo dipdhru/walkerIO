@@ -1,0 +1,37 @@
+# Node
+node_modules/
+dist/
+*.log
+.env
+.env.local
+.env.production
+
+# TypeScript
+*.tsbuildinfo
+
+# React Native
+mobile/ios/Pods/
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/.expo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Terraform
+infrastructure/terraform/.terraform/
+infrastructure/terraform/*.tfstate
+infrastructure/terraform/*.tfstate.backup
+infrastructure/terraform/terraform.tfvars
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+coverage/
