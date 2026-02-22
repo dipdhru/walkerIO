@@ -150,6 +150,149 @@ PostGIS: ST_Intersects scan against nearby territories
 
 ---
 
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v20+
+- [Docker](https://docs.docker.com/get-docker/) & Docker Compose v2
+- [React Native environment](https://reactnative.dev/docs/environment-setup) (for mobile development)
+  - iOS: Xcode 15+ (macOS only)
+  - Android: Android Studio + JDK 17
+
+---
+
+## Running the Backend
+
+### Option A — Docker Compose (recommended)
+
+Spins up PostgreSQL + PostGIS, Redis, and the backend API together. Migrations
+run automatically on first start.
+
+```bash
+# From the repo root
+docker compose -f infrastructure/docker/docker-compose.yml up
+```
+
+| Service        | URL                         |
+| -------------- | --------------------------- |
+| Backend API    | http://localhost:3000       |
+| WebSocket      | ws://localhost:3000         |
+
+Health check: `curl http://localhost:3000/health`
+
+**Optional debug UIs** (add `--profile debug` to enable):
+
+```bash
+docker compose -f infrastructure/docker/docker-compose.yml --profile debug up
+```
+
+| Tool            | URL                   | Credentials                          |
+| --------------- | --------------------- | ------------------------------------- |
+| Redis Commander | http://localhost:8081 | —                                     |
+| pgAdmin         | http://localhost:5050 | dev@walkerio.app / dev_password       |
+
+---
+
+### Option B — Manual local setup
+
+```bash
+cd backend
+npm install
+
+# Copy env file and set values
+cp .env.example .env
+# Edit .env — at minimum set DATABASE_URL, REDIS_URL, JWT_SECRET
+
+# Start the dev server (hot-reload via ts-node-dev)
+npm run dev
+```
+
+The server runs at **http://localhost:3000**.
+
+---
+
+## Running the Mobile App
+
+```bash
+cd mobile
+npm install
+
+# Start Metro bundler
+npm start
+
+# In a separate terminal — run on iOS simulator
+npm run ios
+
+# Or run on Android emulator / device
+npm run android
+```
+
+> **Mapbox token**: set `MAPBOX_ACCESS_TOKEN` in your environment or a
+> `.env` file at `mobile/` before running. See the
+> [@rnmapbox/maps setup guide](https://github.com/rnmapbox/maps/blob/main/plugin/README.md).
+
+---
+
+## Running Tests
+
+### Backend tests
+
+```bash
+cd backend
+npm test            # run all tests once
+npm test -- --watch # watch mode
+```
+
+Tests use **Jest** with `ts-jest`. They run in-band (`--runInBand`) by default
+to avoid port conflicts.
+
+### Mobile tests
+
+```bash
+cd mobile
+npm test
+```
+
+Tests use **Jest** + **@testing-library/react-native**.
+
+### Type checking & linting
+
+```bash
+# Backend
+cd backend
+npm run lint        # ESLint
+npm run build       # TypeScript compile check
+
+# Mobile
+cd mobile
+npm run lint        # ESLint
+npm run type-check  # tsc --noEmit
+```
+
+---
+
+## Viewing Live Data
+
+With the Docker stack running (`--profile debug`):
+
+- **Redis Commander** → http://localhost:8081 — browse cached territory data,
+  Socket.IO session keys, leaderboard sorted sets.
+- **pgAdmin** → http://localhost:5050 — query the PostGIS tables
+  (`territories`, `users`, `sessions`) and run spatial queries.
+
+You can also connect directly:
+
+```bash
+# PostgreSQL
+psql postgresql://walkerio:walkerio_dev_password@localhost:5432/walkerio
+
+# Redis CLI
+redis-cli -h localhost -p 6379
+```
+
+---
+
 ## Repository Structure
 
 ```
